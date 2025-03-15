@@ -1,17 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 interface FileUploaderProps {
-    onFileSelect: (file: File) => void;
+    onFileSelect: (file: File | null) => void;
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            onFileSelect(file);
-        }
+        const file = event.target.files?.[0] || null;
+        setFileName(file ? file.name : null); // ファイル名を更新
+        onFileSelect(file); // 親コンポーネントに渡す
     };
 
     const handleClick = () => {
@@ -19,16 +19,17 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
     };
 
     return (
-        <div>
+        <div className="flex flex-col items-center">
             <input
                 type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                style={{ display: 'none' }} // ファイル入力要素を非表示にする
+                style={{ display: 'none' }} // ファイル入力要素を非表示
             />
             <button onClick={handleClick} className="p-2 bg-blue-500 text-white rounded">
                 ファイルを選択
             </button>
+            {fileName && <p className="mt-2 text-gray-700">選択されたファイル: {fileName}</p>}
         </div>
     );
 };
