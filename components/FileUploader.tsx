@@ -1,23 +1,36 @@
-import { useState } from "react";
-import PlistConverter from "@/components/PlistConverter";
+import React, { useRef } from 'react';
 
-export default function FileUploader() {
-    const [file, setFile] = useState<File | null>(null);
+interface FileUploaderProps {
+    onFileSelect: (file: File) => void;
+}
+
+const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            setFile(event.target.files[0]);
+        const file = event.target.files?.[0];
+        if (file) {
+            onFileSelect(file);
         }
     };
 
+    const handleClick = () => {
+        fileInputRef.current?.click();
+    };
+
     return (
-        <div className="flex flex-col items-center">
-            <input type="file" accept=".plist" onChange={handleFileChange} />
-            {file && (
-                <div className="mt-4">
-                    <PlistConverter file={file} />
-                </div>
-            )}
+        <div>
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }} // ファイル入力要素を非表示にする
+            />
+            <button onClick={handleClick} className="p-2 bg-blue-500 text-white rounded">
+                ファイルを選択
+            </button>
         </div>
     );
-}
+};
+
+export default FileUploader;
