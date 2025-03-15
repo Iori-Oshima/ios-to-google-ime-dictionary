@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PlistConverter from "@/components/PlistConverter";
 
 export default function FileUploader() {
     const [file, setFile] = useState<File | null>(null);
