@@ -1,3 +1,4 @@
+import { GSP_NO_RETURNED_VALUE } from 'next/dist/lib/constants';
 import React, { useRef, useState } from 'react';
 
 interface FileUploaderProps {
@@ -10,6 +11,12 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0] || null;
+        if (file && !file.name.endsWith(".plist")) {
+            alert(".plist形式のファイルのみアップロード可能です。");
+            event.target.value = "";
+            return;
+        }
+
         setFileName(file ? file.name : null); // ファイル名を更新
         onFileSelect(file); // 親コンポーネントに渡す
     };
