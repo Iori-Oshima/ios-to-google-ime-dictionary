@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { parseString } from "xml2js";
+import { convertToGoogleDictionary } from "@/utils/convertToGoogleDictionary";
+import DownloadButton from "@/components/DownloadButton";
 
 export default function PlistConverter({ file }: { file: File | null }) {
-    const [jsonData, setJsonData] = useState<any>(null);
+    const [gdicText, setGdicText] = useState<string>("");
 
     const handleConvert = async () => {
         if (!file) {
@@ -23,7 +25,8 @@ export default function PlistConverter({ file }: { file: File | null }) {
                     }
 
                     console.log("変換されたJSONデータ:", result);
-                    setJsonData(result.plist.array.dict);
+                    const gdicData = convertToGoogleDictionary(result);
+                    setGdicText(gdicData);
                 });
             }
         };
@@ -36,13 +39,16 @@ export default function PlistConverter({ file }: { file: File | null }) {
                 className="p-2 bg-green-500 text-white rounded"
                 onClick={handleConvert}
             >
-                JSONに変換
+                Google日本語入力形式に変換
             </button>
 
-            {jsonData && (
-                <pre className="mt-4 p-2 bg-gray-100 rounded text-sm w-full max-w-md overflow-auto">
-                    {JSON.stringify(jsonData, null, 2)}
-                </pre>
+            {gdicText && (
+                <div className="mt-4">
+                    <pre className="p-2 bg-gray-100 rounded text-sm w-full max-w-md overflow-auto">
+                        {gdicText}
+                    </pre>
+                    <DownloadButton gdicText={gdicText} />
+                </div>
             )}
         </div>
     );
