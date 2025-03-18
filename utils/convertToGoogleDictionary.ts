@@ -5,20 +5,31 @@ export function convertToGoogleDictionary(jsonData: any): string {
         !jsonData.plist.array ||
         !jsonData.plist.array.dict
     ) {
-        return "";
-    }
-
-    const entries = jsonData.plist.array.dict;
-
-    if (!entries.key || !entries.string || !Array.isArray(entries.key) || !Array.isArray(entries.string)) {
         return "（データの構造が正しくありません）";
     }
 
-    const phraseIndex = entries.key.indexOf("phrase");
-    const shortcutIndex = entries.key.indexOf("shortcut");
+    let entries = jsonData.plist.array.dict;
 
-    const phrase = phraseIndex !== -1 ? entries.string[phraseIndex] || "（未設定）" : "（未設定）";
-    const shortcut = shortcutIndex !== -1 ? entries.string[shortcutIndex] || "（未設定）" : "（未設定）";
+    // `entries` がオブジェクト（単一辞書エントリ）だった場合、配列に変換する
+    if (!Array.isArray(entries)) {
+        entries = [entries];
+    }
 
-    return `${shortcut}\t${phrase}\t名詞\r\n`; // ✅ 改行コードを Windows (CRLF) に修正
+    const lines = entries.map((entry: any) => {
+        if (!entry?.key || !entry?.string || !Array.isArray(entry.key) || !Array.isArray(entry.string)) {
+            return "（データの構造が正しくありません）";
+        }
+
+        // phrase と shortcut のインデックスを取得
+        const phraseIndex = entry.key.indexOf("phrase");
+        const shortcutIndex = entry.key.indexOf("shortcut");
+
+        // phrase と shortcut の値を取得
+        const phrase = phraseIndex !== -1 ? entry.string?.[phraseIndex] ?? "（未設定）" : "（未設定）";
+        const shortcut = shortcutIndex !== -1 ? entry.string?.[shortcutIndex] ?? "（未設定）" : "（未設定）";
+
+        return `${shortcut}\t${phrase}\t名詞`;
+    });
+
+    return lines.filter(line => !line.includes("（未設定）")).join("\r\n"); // 空行を除去
 }
