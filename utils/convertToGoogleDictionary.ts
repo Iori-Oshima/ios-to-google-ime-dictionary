@@ -5,17 +5,23 @@ export function convertToGoogleDictionary(jsonData: any): string {
         !jsonData.plist.array ||
         !jsonData.plist.array.dict
     ) {
-        return '';
+        return "";
     }
 
     const entries = jsonData.plist.array.dict;
 
-    const entriesArray = Array.isArray(entries) ? entries : [entries];
-    const lines = entriesArray.map((entry: any) => {
-        const shortcut = entry.shortcut || "";
-        const phrase = entry.phrase || "";
-        return `${shortcut}\t${phrase}\t短縮よみ`;
-    });
+    // `dict.key` に "phrase" と "shortcut" のインデックスがあることを確認
+    if (!entries.key || !entries.string || !Array.isArray(entries.key) || !Array.isArray(entries.string)) {
+        return "（データの構造が正しくありません）";
+    }
 
-    return lines.join("\n");
+    // phrase と shortcut のインデックスを取得
+    const phraseIndex = entries.key.indexOf("phrase");
+    const shortcutIndex = entries.key.indexOf("shortcut");
+
+    // phrase と shortcut の値を取得
+    const phrase = phraseIndex !== -1 ? entries.string[phraseIndex] || "（未設定）" : "（未設定）";
+    const shortcut = shortcutIndex !== -1 ? entries.string[shortcutIndex] || "（未設定）" : "（未設定）";
+
+    return `${shortcut}\t${phrase}\t短縮よみ`;
 }
