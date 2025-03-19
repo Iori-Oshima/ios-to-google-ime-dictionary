@@ -1,4 +1,3 @@
-import { GSP_NO_RETURNED_VALUE } from 'next/dist/lib/constants';
 import React, { useRef, useState } from 'react';
 
 interface FileUploaderProps {
