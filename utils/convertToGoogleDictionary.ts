@@ -15,7 +15,7 @@ export function convertToGoogleDictionary(jsonData: any): string {
         entries = [entries];
     }
 
-    const lines = entries.map((entry: any) => {
+    const lines: string[] = entries.map((entry: any) => {
         if (!entry?.key || !entry?.string || !Array.isArray(entry.key) || !Array.isArray(entry.string)) {
             return "（データの構造が正しくありません）";
         }
@@ -31,5 +31,5 @@ export function convertToGoogleDictionary(jsonData: any): string {
         return `${shortcut}\t${phrase}\t名詞`;
     });
 
-    return lines.filter(line => !line.includes("（未設定）")).join("\r\n"); // 空行を除去
+    return lines.filter((line: string) => !line.includes("（未設定）")).join("\r\n"); // 空行を除去
 }
