@@ -34,12 +34,9 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install dependencies
+      - name: Install dependencies & Build
         run: |
           npm install
-
-      - name: Build
-        run: |
           npm run build
 
       - name: Setup Pages
